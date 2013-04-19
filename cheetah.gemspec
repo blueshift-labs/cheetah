@@ -9,10 +9,10 @@ Gem::Specification.new do |s|
   s.license     = "MIT"
 
   s.required_rubygems_version = Gem::Requirement.new(">=0") if s.respond_to? :required_rubygems_version=
-  s.authors     = ["Dan Rodriguez"]
+  s.authors     = ["Dan Rodriguez", "Wil Chung"]
   s.date        = %q{2013-04-17}
   s.description = %q{CheetahMail is an email provider that sends email for you. Interface with them through this library}
-  s.email       = ["theoperand@gmail.com"]
+  s.email       = ["theoperand@gmail.com", "iamwil@gmail.com"]
   s.homepage    = "https://github.com/iamwilhelm/cheetah"
   s.summary     = %q{A simple library for integrating with the CheetahMail API}
 
