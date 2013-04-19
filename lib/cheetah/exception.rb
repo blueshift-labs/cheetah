@@ -1,14 +1,16 @@
-class CheetahException < Exception
-end
+module Cheetah
+  class CheetahException < Exception
+  end
 
-class CheetahMessagingException < CheetahException
-end
+  class CheetahMessagingException < CheetahException
+  end
 
-class CheetahAuthorizationException < CheetahMessagingException
-end
+  class CheetahAuthorizationException < CheetahMessagingException
+  end
 
-class CheetahTemporaryException < CheetahMessagingException
-end
+  class CheetahTemporaryException < CheetahMessagingException
+  end
 
-class CheetahPermanentException < CheetahMessagingException
+  class CheetahPermanentException < CheetahMessagingException
+  end
 end

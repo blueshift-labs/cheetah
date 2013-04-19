@@ -1,8 +1,10 @@
-class Message
-  attr_accessor :path, :params
+module Cheetah
+  class Message
+    attr_accessor :path, :params
 
-  def initialize path, params
-    @path   = path
-    @params = params
+    def initialize path, params
+      @path   = path
+      @params = params
+    end
   end
 end
