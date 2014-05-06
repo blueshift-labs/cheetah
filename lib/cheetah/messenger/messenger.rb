@@ -51,7 +51,7 @@ module Cheetah
         http.verify_mode  = OpenSSL::SSL::VERIFY_PEER
       end
 
-      request = Net::HTTP.Post.new(path, initheader)
+      request = Net::HTTP::Post.new(path, initheader)
       request.set_form_data(params)
 
       resp = http.request(request)
