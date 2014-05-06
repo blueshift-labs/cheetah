@@ -43,15 +43,18 @@ module Cheetah
     # actually sends the request and raises any exceptions
     def do_post(path, params, initheader = nil)
       http              = Net::HTTP.new(@options[:host], 443)
-      http.read_timeout = 5
+      http.read_timeout = 10
       http.use_ssl      = true
       if(@options[:host].start_with?("trig."))
         http.verify_mode  = OpenSSL::SSL::VERIFY_NONE
       else
         http.verify_mode  = OpenSSL::SSL::VERIFY_PEER
       end
-      data              = params.to_a.map { |a| "#{a[0]}=#{a[1]}" }.join("&")
-      resp              = http.post(path, data, initheader)
+
+      request = Net::HTTP.Post.new(path, initheader)
+      request.set_form_data(params)
+
+      resp = http.request(request)
 
       raise CheetahTemporaryException,     "failure:'#{path}?#{data}', HTTP error: #{resp.code}"            if resp.code =~ /5../
       raise CheetahPermanentException,     "failure:'#{path}?#{data}', HTTP error: #{resp.code}"            if resp.code =~ /[^2]../
