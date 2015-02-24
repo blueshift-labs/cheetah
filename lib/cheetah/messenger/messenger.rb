@@ -16,7 +16,7 @@ module Cheetah
     def send_message(message)
       if !@options[:whitelist_filter] or message.params['email'] =~ @options[:whitelist_filter]
         message.params['test'] = "1" unless @options[:enable_tracking]
-        do_send(message) # implemented by the subclass
+        do_request(message) # implemented by the subclass
         true
       else
         false
@@ -56,11 +56,11 @@ module Cheetah
 
       resp = http.request(request)
 
-      raise CheetahTemporaryException,     "failure:'#{path}?#{data}', HTTP error: #{resp.code}"            if resp.code =~ /5../
-      raise CheetahPermanentException,     "failure:'#{path}?#{data}', HTTP error: #{resp.code}"            if resp.code =~ /[^2]../
-      raise CheetahAuthorizationException, "failure:'#{path}?#{data}', Cheetah error: #{resp.body.strip}"   if resp.body =~ /^err:auth/
-      raise CheetahTemporaryException,     "failure:'#{path}?#{data}', Cheetah error: #{resp.body.strip}"   if resp.body =~ /^err:internal error/
-      raise CheetahPermanentException,     "failure:'#{path}?#{data}', Cheetah error: #{resp.body.strip}"   if resp.body =~ /^err/
+      raise CheetahTemporaryException,     "failure:'#{path}?#{params}', HTTP error: #{resp.code}"            if resp.code =~ /5../
+      raise CheetahPermanentException,     "failure:'#{path}?#{params}', HTTP error: #{resp.code}"            if resp.code =~ /[^2]../
+      raise CheetahAuthorizationException, "failure:'#{path}?#{params}', Cheetah error: #{resp.body.strip}"   if resp.body =~ /^err:auth/
+      raise CheetahTemporaryException,     "failure:'#{path}?#{params}', Cheetah error: #{resp.body.strip}"   if resp.body =~ /^err:internal error/
+      raise CheetahPermanentException,     "failure:'#{path}?#{params}', Cheetah error: #{resp.body.strip}"   if resp.body =~ /^err/
                                                                                                             
       resp                                                                                                  
     end
