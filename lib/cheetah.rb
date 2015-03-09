@@ -37,6 +37,53 @@ module Cheetah
       params['email'] = email
       @messenger.send_message(Message.new(path, params))
     end
+    
+    #Create subscriber list
+    def set_subscriber_list(params = {})
+      path = "/cgi-bin/api/setlist1"
+      response = @messenger.do_request(Message.new(path, params))
+      response.body.match(/\d{1,12}/)[0]
+    end
+    
+    #TODO
+    #export users in subscriber list
+    def load_subscriber(email, file, sid, params = {})
+      path = "/cgi-bin/api/load1"
+      params['email'] = email
+      params['sid'] = sid
+      params['file'] = file
+      response = @messenger.do_request(Message.new(path, params))
+      response.body
+    end
+    
+    #Create new mailing
+    #Send mail set parameter {"approve" => 1, "send" => 1}
+    #Test send set parameter {"test" => 8, "tester" => "test@example.com"}
+    def mailgo(name, subject, from, params = {})
+      path = "/cgi-bin/api/mailgo1"
+      params['name'] = name
+      params['subject'] = subject
+      params['from'] = from
+      response = @messenger.do_request(Message.new(path, params))
+      response.body.match(/\d{1,12}/)[0]
+    end
+    
+    #Set Mail - upload content for a mailing
+    #Create maling template using valid parameter
+    def setmail(params = {})
+      path = "/cgi-bin/api/setmail1"
+      @messenger.send_message(Message.new(path, params))
+    end
+    
+    #Send bulkmail
+    #Create maling template using valid parameter or set mid
+    #Send mailing set parameter {"approve" => 1, "send" => 1}
+    #Test send set parameter {"test" => 8, "tester" => "test@example.com"}
+    def bulkmail(params = {})
+      path = "/api/bulkmail1"
+      response = @messenger.do_request(Message.new(path, params))
+      response.body.match(/\d{1,12}/)[0]
+    end
 
     def mailing_list_update(email, params = {})
       path = "/api/setuser1"

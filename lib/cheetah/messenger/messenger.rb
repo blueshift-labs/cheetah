@@ -28,7 +28,7 @@ module Cheetah
       begin
         login unless @cookie
         initheader = {'Cookie' => @cookie || ''}
-        message.params['aid'] = @options[:aid]
+        message.params['aid'] = @options[:aid] if @options[:aid]
         resp = do_post(message.path, message.params, initheader)
       rescue CheetahAuthorizationException => e
         # it may be that the cookie is stale. clear it and immediately retry. 
@@ -52,6 +52,7 @@ module Cheetah
       end
 
       request = Net::HTTP::Post.new(path, initheader)
+      request.content_type = 'multipart/form-data'
       request.set_form_data(params)
 
       resp = http.request(request)
