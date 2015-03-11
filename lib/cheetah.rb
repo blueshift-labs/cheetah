@@ -45,17 +45,6 @@ module Cheetah
       response.body.match(/\d{1,12}/)[0]
     end
     
-    #TODO
-    #export users in subscriber list
-    def load_subscriber(email, file, sid, params = {})
-      path = "/cgi-bin/api/load1"
-      params['email'] = email
-      params['sid'] = sid
-      params['file'] = file
-      response = @messenger.do_request(Message.new(path, params))
-      response.body
-    end
-    
     #Create new mailing
     #Send mail set parameter {"approve" => 1, "send" => 1}
     #Test send set parameter {"test" => 8, "tester" => "test@example.com"}
@@ -98,6 +87,14 @@ module Cheetah
       params['newemail'] = newemail
       @messenger.send_message(Message.new(path, params))
     end
-
+    
+    #export users in subscriber list
+    #provide user emails in csv file and upload on cheetahmail
+    def load(filepath, params = {})
+      path = "/cgi-bin/api/load1"
+      file = File.open(filepath)
+      params["file"] = UploadIO.new(file, "text/csv", filepath.split("/").last)
+      @messenger.load_data(Message.new(path, params))
+    end
   end
 end

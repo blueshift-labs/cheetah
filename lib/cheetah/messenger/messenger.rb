@@ -1,6 +1,7 @@
 require 'net/http'
 require 'net/https'
 require 'uri'
+require 'net/http/post/multipart'
 
 module Cheetah
   class Messenger
@@ -38,6 +39,19 @@ module Cheetah
       end
     end
 
+    #Upload file on cheetahmail
+    def load_data(message)
+      begin
+      login unless @cookie
+      initheader = {'Cookie' => @cookie || ''}
+      message.params['aid'] = @options[:aid] if @options[:aid]
+      resp = do_post_for_upload(message.path, message.params, initheader)
+      rescue CheetahAuthorizationException => e
+        @cookie = nil
+        retry
+      end
+    end
+
     private #####################################################################
 
     # actually sends the request and raises any exceptions
@@ -50,11 +64,9 @@ module Cheetah
       else
         http.verify_mode  = OpenSSL::SSL::VERIFY_PEER
       end
-
+       
       request = Net::HTTP::Post.new(path, initheader)
-      request.content_type = 'multipart/form-data'
       request.set_form_data(params)
-
       resp = http.request(request)
 
       raise CheetahTemporaryException,     "failure:'#{path}?#{params}', HTTP error: #{resp.code}"            if resp.code =~ /5../
@@ -63,8 +75,35 @@ module Cheetah
       raise CheetahTemporaryException,     "failure:'#{path}?#{params}', Cheetah error: #{resp.body.strip}"   if resp.body =~ /^err:internal error/
       raise CheetahPermanentException,     "failure:'#{path}?#{params}', Cheetah error: #{resp.body.strip}"   if resp.body =~ /^err/
                                                                                                             
-      resp                                                                                                  
+      resp
     end
+     
+    #Send file using this methode and raise if any error
+    def do_post_for_upload(path, params, initheader = nil)
+      http              = Net::HTTP.new(@options[:host], 443)
+      http.read_timeout = 10
+      http.use_ssl      = true
+      if(@options[:host].start_with?("trig."))
+        http.verify_mode  = OpenSSL::SSL::VERIFY_NONE
+      else
+        http.verify_mode  = OpenSSL::SSL::VERIFY_PEER
+      end
+       
+      request = Net::HTTP::Post::Multipart.new(path, params, initheader)
+      resp = http.start do |h|
+        h.request(request)
+      end
+      resp
+
+      raise CheetahTemporaryException,     "failure:'#{path}?#{params}', HTTP error: #{resp.code}"            if resp.code =~ /5../
+      raise CheetahPermanentException,     "failure:'#{path}?#{params}', HTTP error: #{resp.code}"            if resp.code =~ /[^2]../
+      raise CheetahAuthorizationException, "failure:'#{path}?#{params}', Cheetah error: #{resp.body.strip}"   if resp.body =~ /^err:auth/
+      raise CheetahTemporaryException,     "failure:'#{path}?#{params}', Cheetah error: #{resp.body.strip}"   if resp.body =~ /^err:internal error/
+      raise CheetahPermanentException,     "failure:'#{path}?#{params}', Cheetah error: #{resp.body.strip}"   if resp.body =~ /^err/
+                                                                                                            
+      resp.body
+    end
+
 
     # sets the instance @cookie variable
     def login
