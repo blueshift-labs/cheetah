@@ -51,7 +51,7 @@ module Cheetah
     def mailgo(params = {})
       path = "/cgi-bin/api/mailgo1"
       response = @messenger.do_request(Message.new(path, params))
-      response.body.match(/\d{1,12}/)[0]
+      response.body
     end
     
     #Set Mail - upload content for a mailing
