@@ -27,6 +27,7 @@ module Cheetah
     #   :enable_tracking  => true                     # determines whether cheetahmail will track the sending of emails for analytics purposes
     #   :messenger        => Cheetah::ResqueMessenger
     # }
+
     def initialize(options)
       @messenger = options[:messenger].new(options)
     end
@@ -42,7 +43,7 @@ module Cheetah
     def set_subscriber_list(params = {})
       path = "/cgi-bin/api/setlist1"
       response = @messenger.do_request(Message.new(path, params))
-      response.body.match(/\d{1,12}/)[0]
+      response.body
     end
     
     #Create new mailing
@@ -68,7 +69,7 @@ module Cheetah
     def bulkmail(params = {})
       path = "/api/bulkmail1"
       response = @messenger.do_request(Message.new(path, params))
-      response.body.match(/\d{1,12}/)[0]
+      response.body
     end
 
     def mailing_list_update(email, params = {})
