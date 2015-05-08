@@ -57,7 +57,6 @@ module Cheetah
     # actually sends the request and raises any exceptions
     def do_post(path, params, initheader = nil)
       http              = Net::HTTP.new(@options[:host], 443)
-      http.read_timeout = 10
       http.use_ssl      = true
       if(@options[:host].start_with?("trig."))
         http.verify_mode  = OpenSSL::SSL::VERIFY_NONE
@@ -81,7 +80,6 @@ module Cheetah
     #Send file using this methode and raise if any error
     def do_post_for_upload(path, params, initheader = nil)
       http              = Net::HTTP.new(@options[:host], 443)
-      http.read_timeout = 10
       http.use_ssl      = true
       if(@options[:host].start_with?("trig."))
         http.verify_mode  = OpenSSL::SSL::VERIFY_NONE
